@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -394,7 +395,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         public void onResponse(String response)
                         {
                             Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
-                            showProgress(false);
+                            try {
+                                JSONObject jsonResp = new JSONObject(response);
+                                Log.d("Response json:", jsonResp.toString());
+                                showProgress(false);
+                                Intent intent = new Intent (mctx, CentralActivity.class);
+                                intent.putExtra("email",jsonResp.getString("email"));
+                                startActivityForResult(intent, 0);
+                            } catch (Throwable t) {
+                                Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            }
                         }
                     },
                     new Response.ErrorListener()
