@@ -337,57 +337,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-
-//            SyncHttpClient client = new SyncHttpClient();
-
             String url = "http://ikaroira.com/ws-user.php/loginUser";
-//            JSONObject jo = new JSONObject();
-//            try {
-//                jo.put("username",mEmail);
-//                jo.put("password",mPassword);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            JsonObjectRequest jsObjRequest = new JsonObjectRequest
-//                    (Request.Method.POST, url, jo, new Response.Listener<JSONObject>() {
-//
-//                        @Override
-//                        public void onResponse(JSONObject response) {
-////                            mTxtDisplay.setText("Response: " + response.toString());
-//                            Log.println(Log.ERROR,null,response.toString());
-//                        }
-//                    }, new Response.ErrorListener() {
-//
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            // TODO Auto-generated method stub
-//
-//                            Log.println(Log.ERROR,null,error.toString());
-//                        }
-//                    }) {
-//
-//                @Override
-//                protected Map<String, String> getParams() throws AuthFailureError {
-//                    // Posting parameters to login url
-//                    Map<String, String> params = new HashMap<String, String>();
-//                    params.put("username", mEmail);
-//                    params.put("password", mPassword);
-//                    return super.getParams();
-//                }
-//                @Override
-//                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-//                    try {
-//                        String jsonString = new String(response.data,
-//                                HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
-//                        return Response.success(new JSONObject(jsonString),
-//                                HttpHeaderParser.parseCacheHeaders(response));
-//                    } catch (UnsupportedEncodingException e) {
-//                        return Response.error(new ParseError(e));
-//                    } catch (JSONException je) {
-//                        return Response.error(new ParseError(je));
-//                    }
-//                }
-//            };
             StringRequest strRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>()
                     {
