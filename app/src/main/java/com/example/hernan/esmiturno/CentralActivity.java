@@ -144,6 +144,7 @@ public class CentralActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TableRow tr = (TableRow)v;
                 tr.setBackgroundColor(Color.MAGENTA);
+                //TODO ir a otra pagina
 //                    Intent myIntent = new Intent(PNs.this, Main.class);
 //                    PNs.this.startActivity(myIntent);
             }
