@@ -18,4 +18,5 @@
     <string name="title_home">Inicio</string>
     <string name="title_dashboard">Turnos</string>
     <string name="title_notifications">Notificaciones</string>
+    <string name="title_activity_meet_detail">MeetDetailActivity</string>
 </resources>

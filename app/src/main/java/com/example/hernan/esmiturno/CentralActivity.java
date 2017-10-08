@@ -1,5 +1,6 @@
 package com.example.hernan.esmiturno;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
@@ -34,6 +36,7 @@ public class CentralActivity extends AppCompatActivity {
     private QuickContactBadge meetBadge;
 
     private TableLayout mMeetTableList;
+    private Context contexto;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -44,7 +47,7 @@ public class CentralActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
                     mTextMessage.setVisibility(View.VISIBLE);
-                    homeTabCreate();
+                    homeTabCreate(contexto);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -66,11 +69,11 @@ public class CentralActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_central);
-
+        contexto = this;
         mTextMessage = (TextView) findViewById(R.id.message);
         mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
         mMeetTableList.removeAllViews();
-        homeTabCreate();
+        homeTabCreate(contexto);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -81,7 +84,7 @@ public class CentralActivity extends AppCompatActivity {
         Log.d("email: ", fraseimportada);
     }
 
-    private void homeTabCreate(){
+    private void homeTabCreate(final Context mctx){
 //TODO colocar la url que trae los meets por id
         String url = "http://ikaroira.com/ws-meet.php/getAll";
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
@@ -98,7 +101,7 @@ public class CentralActivity extends AppCompatActivity {
                             Log.d("Response json:", jsonResp.getJSONObject(0).toString());
                             Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
                             for (int i=0;i<jsonResp.length();i++){
-                                addRowToTableMeet(jsonResp.getJSONObject(i));
+                                addRowToTableMeet(jsonResp.getJSONObject(i),mctx);
                             }
 //                            Intent intent = new Intent (mctx, CentralActivity.class);
 //                            intent.putExtra("email",jsonResp.getString("email"));
@@ -121,17 +124,17 @@ public class CentralActivity extends AppCompatActivity {
 
 
         //carga dinamica de rows
-        for (int i=0;i<5;i++){
-            addRowToTableMeet(null);
-
-        }
+//        for (int i=0;i<5;i++){
+//            addRowToTableMeet(null);
+//
+//        }
     }
     private void dashboardTabCreate(){
         mMeetTableList.removeAllViews();
 
     }
 
-    private void addRowToTableMeet(JSONObject rowData){
+    private void addRowToTableMeet(JSONObject rowData,final Context mctx){
         LinearLayout outerLayout = new LinearLayout(this);
         TableRow row= new TableRow(this);
         TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
@@ -144,10 +147,17 @@ public class CentralActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TableRow tr = (TableRow)v;
                 tr.setBackgroundColor(Color.MAGENTA);
-//                    Intent myIntent = new Intent(PNs.this, Main.class);
-//                    PNs.this.startActivity(myIntent);
+                    Intent myIntent = new Intent(mctx, MeetDetailFastActivity.class);
+                    mctx.startActivity(myIntent);
             }
         });
+//        row.setOnTouchListener(new View.OnTouchListener(){
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event){
+//                Log.d("evento: ", event.toString());
+//                return true;
+//            }
+//        });
 
         TextView head = new TextView(this);
         if (rowData != null){
