@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class CentralActivity extends AppCompatActivity {
 
+    private String idUser;
     private TextView mTextMessage;
     private QuickContactBadge meetBadge;
 
@@ -47,7 +48,7 @@ public class CentralActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
                     mTextMessage.setVisibility(View.VISIBLE);
-                    homeTabCreate(contexto);
+                    homeTabCreate(contexto,idUser);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -73,20 +74,21 @@ public class CentralActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
         mMeetTableList.removeAllViews();
-        homeTabCreate(contexto);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         //se recogen datos de la anterior pantalla
         Bundle bundle = getIntent().getExtras();
-        String fraseimportada=bundle.getString("email");
-
-        Log.d("email: ", fraseimportada);
+//        String fraseimportada=bundle.getString("email");
+        idUser = bundle.getString("id");
+//        Log.d("email: ", fraseimportada);
+        homeTabCreate(contexto,idUser);
     }
 
-    private void homeTabCreate(final Context mctx){
+    private void homeTabCreate(final Context mctx, final String idUser){
 //TODO colocar la url que trae los meets por id
-        String url = "http://ikaroira.com/ws-meet.php/getAll";
+//        String url = "http://ikaroira.com/ws-meet.php/getAll";
+        String url = "http://ikaroira.com/ws-meet.php/getAllByUser/"+idUser;
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
                 {
@@ -95,13 +97,18 @@ public class CentralActivity extends AppCompatActivity {
                     {
                         Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
                         try {
-                            JSONArray jsonResp = new JSONArray(response);
-                            Log.d("Response json:", jsonResp.toString());
-                            Log.d("Response json:", String.valueOf(jsonResp.length()));
-                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
-                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
-                            for (int i=0;i<jsonResp.length();i++){
-                                addRowToTableMeet(jsonResp.getJSONObject(i),mctx);
+                            JSONObject jsonResp = new JSONObject(response);
+//                            Log.d("Response json:", jsonResp.toString());
+//                            Log.d("Response json:", String.valueOf(jsonResp.length()));
+//                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
+//                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
+                            JSONArray jsonCust = jsonResp.getJSONArray("custom");
+                            JSONArray jsonProv = jsonResp.getJSONArray("provider");
+                            for (int i=0;i<jsonCust.length();i++){
+                                addRowToTableMeet(jsonCust.getJSONObject(i),mctx);
+                            }
+                            for (int i=0;i<jsonProv.length();i++){
+                                addRowToTableMeet(jsonProv.getJSONObject(i),mctx);
                             }
 //                            Intent intent = new Intent (mctx, CentralActivity.class);
 //                            intent.putExtra("email",jsonResp.getString("email"));
@@ -134,7 +141,7 @@ public class CentralActivity extends AppCompatActivity {
 
     }
 
-    private void addRowToTableMeet(JSONObject rowData,final Context mctx){
+    private void addRowToTableMeet(final JSONObject rowData,final Context mctx){
         LinearLayout outerLayout = new LinearLayout(this);
         TableRow row= new TableRow(this);
         TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
@@ -147,8 +154,13 @@ public class CentralActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TableRow tr = (TableRow)v;
                 tr.setBackgroundColor(Color.MAGENTA);
-                    Intent myIntent = new Intent(mctx, MeetDetailFastActivity.class);
-                    mctx.startActivity(myIntent);
+                try {
+                    Intent intent = new Intent(mctx, MeetDetailFastActivity.class);
+                    intent.putExtra("idMeet",rowData.getString("id"));
+                    mctx.startActivity(intent);
+                } catch (Throwable t) {
+                    Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
+                }
             }
         });
 //        row.setOnTouchListener(new View.OnTouchListener(){

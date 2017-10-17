@@ -87,7 +87,7 @@
                     android:id="@+id/textView99"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pestador del Servicio" />
+                    android:text="Pestador:" />
 
                 <TextView
                     android:id="@+id/txtProvider"
@@ -124,10 +124,65 @@
                     android:id="@+id/textView888"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Paciente" />
+                    android:text="Paciente:" />
 
                 <TextView
                     android:id="@+id/txtCustomer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_row="0" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textView8888"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OS/Prepaga/Otro:" />
+
+                <TextView
+                    android:id="@+id/txtPrepaga"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_row="0" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textViewEspecialidad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Especialidad:" />
+
+                <TextView
+                    android:id="@+id/txtEspecialidad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_row="0" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textViewCredential"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Credencial:" />
+
+                <TextView
+                    android:id="@+id/txtCredential"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1"

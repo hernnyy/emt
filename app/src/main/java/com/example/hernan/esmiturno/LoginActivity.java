@@ -350,7 +350,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 Log.d("Response json:", jsonResp.toString());
                                 showProgress(false);
                                 Intent intent = new Intent (mctx, CentralActivity.class);
-                                intent.putExtra("email",jsonResp.getString("email"));
+//                                intent.putExtra("email",jsonResp.getString("email"));
+                                intent.putExtra("id",jsonResp.getString("id"));
                                 startActivityForResult(intent, 0);
                             } catch (Throwable t) {
                                 Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
