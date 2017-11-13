@@ -32,7 +32,11 @@
             android:name=".MeetDetailActivity"
             android:label="@string/title_activity_meet_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".MeetDetailFastActivity"></activity>
+        <activity android:name=".MeetDetailFastActivity" />
+        <activity
+            android:name=".ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

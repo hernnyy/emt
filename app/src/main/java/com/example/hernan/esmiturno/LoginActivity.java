@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.loopj.android.http.*;
 
 import android.os.Build;
@@ -89,6 +90,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +122,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     private void populateAutoComplete() {
@@ -349,6 +354,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 JSONObject jsonResp = new JSONObject(response);
                                 Log.d("Response json:", jsonResp.toString());
                                 showProgress(false);
+
+                                //event log
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.SIGN_UP_METHOD, "userpass");
+                                bundle.putString(FirebaseAnalytics.Param.VALUE, jsonResp.getString("id"));
+//                                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, jsonResp.getString("email"));
+                                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+
                                 Intent intent = new Intent (mctx, CentralActivity.class);
 //                                intent.putExtra("email",jsonResp.getString("email"));
                                 intent.putExtra("id",jsonResp.getString("id"));
