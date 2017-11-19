@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.QuickContactBadge;
 import android.widget.TableLayout;
@@ -41,7 +42,7 @@ public class CentralActivity extends AppCompatActivity {
 
     private String idUser;
     private TextView mTextMessage;
-    private QuickContactBadge meetBadge;
+    private Button dummyBoton;
 
     private RecyclerView recyclerView;
     private MeetSimpleAdapter adapter;
@@ -64,14 +65,14 @@ public class CentralActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
-                    mTextMessage.setVisibility(View.INVISIBLE);
+                    mTextMessage.setVisibility(View.VISIBLE);
+
                     dashboardTabCreate();
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
                     mTextMessage.setVisibility(View.VISIBLE);
-                    meetList.clear();
-//                    mMeetTableList.removeAllViews();
+                    clearHomeViews();
                     return true;
             }
             return false;
@@ -89,8 +90,21 @@ public class CentralActivity extends AppCompatActivity {
         setContentView(R.layout.activity_central);
         contexto = this;
         mTextMessage = (TextView) findViewById(R.id.message);
+        dummyBoton = (Button) findViewById(R.id.dummyBoton);
 //        mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
 //        mMeetTableList.removeAllViews();
+        dummyBoton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(contexto, AddMeetActivity.class);
+//                    intent.putExtra("idMeet",rowData.getString("id"));
+                    contexto.startActivity(intent);
+                } catch (Throwable t) {
+                    Log.e("My App", "Could not intent");
+                }
+            }
+        });
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -103,7 +117,6 @@ public class CentralActivity extends AppCompatActivity {
     }
 
     private void homeTabCreate(final Context mctx, final String idUser){
-//TODO colocar la url que trae los meets por id
 //        String url = "http://ikaroira.com/ws-meet.php/getAll";
         String url = "http://ikaroira.com/ws-meet.php/getAllByUser/"+idUser;
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
@@ -156,8 +169,13 @@ public class CentralActivity extends AppCompatActivity {
 
     }
     private void dashboardTabCreate(){
-//        mMeetTableList.removeAllViews();
+        clearHomeViews();
+    }
+
+    private void clearHomeViews(){
         meetList.clear();
+        recyclerView.removeAllViews();
+        adapter.notifyDataSetChanged();
     }
 
     private void addRowToTableMeet(final JSONObject rowData,final Context mctx){
