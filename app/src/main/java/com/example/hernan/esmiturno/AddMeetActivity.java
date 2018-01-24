@@ -18,12 +18,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
+import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.util.DatePickerFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AddMeetActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,12 +41,15 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private EditText editProv;
     private EditText editPlace;
     private Button search;
+    private int[] colors;
+    private ArrayList<Meet> blackMeetList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meet);
 
+        colors = getResources().getIntArray(R.array.initial_colors);
         editDate = (EditText) findViewById(R.id.fecha);
         editProv = (EditText) findViewById(R.id.txtProv);
         editPlace = (EditText) findViewById(R.id.txtPlace);
@@ -65,6 +76,29 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                         try {
                             JSONArray jsonResp = new JSONArray(response);
                             Log.d("Response json:", jsonResp.toString());
+
+                            for (int i=0;i<jsonResp.length();i++){
+                                addRowToTableMeet(jsonResp.getJSONObject(i),mctx);
+                            }
+
+                            String fechaBase = editDate.getText().toString();
+                            Calendar basecal = Calendar.getInstance();
+                            Calendar limitcal = Calendar.getInstance();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd", Locale.getDefault());
+                            basecal.setTime(sdf.parse(fechaBase));
+                            limitcal.setTime(sdf.parse(fechaBase));
+                            basecal.set(Calendar.HOUR,8);
+                            basecal.set(Calendar.MINUTE,0);
+                            limitcal.set(Calendar.HOUR,22);
+                            limitcal.set(Calendar.MINUTE,0);
+                            int i = 0;
+                            while(basecal.before(limitcal)){
+                                if(basecal.getTime().equals(blackMeetList.get(i).getFecha())){
+                                    i++;
+                                }
+                                basecal.add(Calendar.MINUTE,15);
+                            }
+
 //                            Log.d("Response json:", String.valueOf(jsonResp.length()));
 //                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
 //                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
@@ -126,6 +160,25 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    private void addRowToTableMeet(final JSONObject rowData,final Context mctx){
+        try {
+            Meet meeto = new Meet();
+            DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+            Date convertedDate = readFormat.parse(rowData.getString("fecha"));
+
+            meeto.setFecha(convertedDate);
+            meeto.setColorResource(colors[10]);
+            blackMeetList.add(meeto);
+        } catch (ParseException e) {
+            Log.e("My App", "Could not parse date: \"" + rowData + "\"");
+            e.printStackTrace();
+        } catch (Throwable t) {
+            Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
+        }
+
     }
 
     @Override
