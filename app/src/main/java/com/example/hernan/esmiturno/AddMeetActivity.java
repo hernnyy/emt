@@ -17,6 +17,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.hernan.esmiturno.adapter.MeetNewAdapter;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
 import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.util.DatePickerFragment;
@@ -42,7 +43,11 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private EditText editPlace;
     private Button search;
     private int[] colors;
+
+    private RecyclerView recyclerView;
+    private MeetNewAdapter adapter;
     private ArrayList<Meet> blackMeetList = new ArrayList<>();
+    private ArrayList<Meet> meetList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +83,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             Log.d("Response json:", jsonResp.toString());
 
                             for (int i=0;i<jsonResp.length();i++){
-                                addRowToTableMeet(jsonResp.getJSONObject(i),mctx);
+                                addToBlackListMeet(jsonResp.getJSONObject(i),mctx);
                             }
 
                             String fechaBase = editDate.getText().toString();
@@ -95,9 +100,21 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             while(basecal.before(limitcal)){
                                 if(basecal.getTime().equals(blackMeetList.get(i).getFecha())){
                                     i++;
+                                }else{
+                                    Meet meeto = new Meet();
+                                    meeto.setFecha(basecal.getTime());
+                                    meeto.setColorResource(colors[9]);
+                                    meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);
                             }
+
+                            if (adapter == null) {
+                                adapter = new MeetNewAdapter(mctx, meetList);
+                            }
+                            recyclerView = (RecyclerView) findViewById(R.id.recycler_new_view);
+                            recyclerView.setAdapter(adapter);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(mctx));
 
 //                            Log.d("Response json:", String.valueOf(jsonResp.length()));
 //                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
@@ -149,6 +166,10 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    public void doSmoothScroll(int position) {
+        recyclerView.smoothScrollToPosition(position);
+    }
+
     private void showDatePickerDialog() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -162,7 +183,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
-    private void addRowToTableMeet(final JSONObject rowData,final Context mctx){
+    private void addToBlackListMeet(final JSONObject rowData,final Context mctx){
         try {
             Meet meeto = new Meet();
             DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
