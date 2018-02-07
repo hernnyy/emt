@@ -82,6 +82,9 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             JSONArray jsonResp = new JSONArray(response);
                             Log.d("Response json:", jsonResp.toString());
 
+                            blackMeetList = new ArrayList<>();
+                            meetList = new ArrayList<>();
+
                             for (int i=0;i<jsonResp.length();i++){
                                 addToBlackListMeet(jsonResp.getJSONObject(i),mctx);
                             }
@@ -89,7 +92,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             String fechaBase = editDate.getText().toString();
                             Calendar basecal = Calendar.getInstance();
                             Calendar limitcal = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd", Locale.getDefault());
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                            Date d = sdf.parse(fechaBase);
                             basecal.setTime(sdf.parse(fechaBase));
                             limitcal.setTime(sdf.parse(fechaBase));
                             basecal.set(Calendar.HOUR,8);
@@ -98,12 +102,12 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             limitcal.set(Calendar.MINUTE,0);
                             int i = 0;
                             while(basecal.before(limitcal)){
-                                if(basecal.getTime().equals(blackMeetList.get(i).getFecha())){
+                                if(i<blackMeetList.size() && basecal.getTime().equals(blackMeetList.get(i).getFecha())){
                                     i++;
                                 }else{
                                     Meet meeto = new Meet();
                                     meeto.setFecha(basecal.getTime());
-                                    meeto.setColorResource(colors[9]);
+                                    meeto.setColorResource(colors[8]);
                                     meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);
@@ -116,31 +120,10 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(new LinearLayoutManager(mctx));
 
-//                            Log.d("Response json:", String.valueOf(jsonResp.length()));
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
-//                            JSONArray jsonCust = jsonResp.getJSONArray("custom");
-//                            JSONArray jsonProv = jsonResp.getJSONArray("provider");
-
-//                            colors = getResources().getIntArray(R.array.initial_colors);
-//                            for (int i=0;i<jsonCust.length();i++){
-//                                addRowToTableMeet(jsonCust.getJSONObject(i),mctx);
-//
-//                            }
-//                            for (int i=0;i<jsonProv.length();i++){
-//                                addRowToTableMeet(jsonProv.getJSONObject(i),mctx);
-//                            }
-//
-//                            if (adapter == null) {
-//                                adapter = new MeetSimpleAdapter(mctx, meetList);
-//                            }
-//                            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-//                            recyclerView.setAdapter(adapter);
-//                            recyclerView.setLayoutManager(new LinearLayoutManager(mctx));
-
-
                         } catch (Throwable t) {
                             Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            Log.e("My App",t.getMessage());
+                            t.printStackTrace();
                         }
                     }
                 },
