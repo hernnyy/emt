@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MAIN_URL">http://ikaroira.com/</string>
+    <string name="loginService">login</string>
+    <string name="MAIN_USER_SERVICE">ws-user.php/</string>
+    <string name="MAIN_MEET_SERVICE">ws-meet.php/</string>
+</resources>

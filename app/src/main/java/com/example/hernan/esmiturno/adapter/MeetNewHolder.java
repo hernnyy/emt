@@ -65,7 +65,14 @@ public class MeetNewHolder extends RecyclerView.ViewHolder {
 //                ((AppCompatActivity) context).startActivityForResult(transitionIntent, requestCode, options.toBundle());
                 try {
                     Intent intent = new Intent(mctx, MeetDetailFastActivity.class);
-                    intent.putExtra("idMeet",meetList.get(requestCode).getId().toString());
+                    intent.putExtra("idMeet","");
+//                    intent.putExtra("oMeet",meetList.get(requestCode));
+                    //intent.putExtra("idMeet",meetList.get(requestCode).getId().toString());
+                    intent.putExtra("idProvider",meetList.get(requestCode).getProvider().getId().toString());
+                    intent.putExtra("idCustomer",meetList.get(requestCode).getCustomer().getId().toString());
+                    intent.putExtra("idPlace",meetList.get(requestCode).getMeetPlace().getId().toString());
+                    intent.putExtra("idDate",meetList.get(requestCode).getFechaAsString());
+                    intent.putExtra("objectDate",meetList.get(requestCode).getFecha());
                     mctx.startActivity(intent);
                 } catch (Throwable t) {
                     Log.e("My App", "Could not pass: \"" + meetList + "\"");

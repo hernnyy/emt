@@ -8,6 +8,10 @@ public class MeetPlace {
     private Long id;
     private Addres addres;
 
+    public MeetPlace(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

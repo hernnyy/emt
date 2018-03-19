@@ -37,8 +37,9 @@ public class MeetNewAdapter extends RecyclerView.Adapter<MeetNewHolder> {
         TextView nameTextView = viewHolder.getHour();
 
         SimpleDateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        meetList.get(position).setFechaAsString(dateForm.format(meetList.get(position).getFecha()));
+        nameTextView.setText(meetList.get(position).getFechaAsString());
 
-        nameTextView.setText( dateForm.format(meetList.get(position).getFecha()));
         initial.setBackgroundColor(meetList.get(position).getColorResource());
 //        initial.setText(String.valueOf(meetList.get(position).getId()));
     }

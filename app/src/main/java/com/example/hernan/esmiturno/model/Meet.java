@@ -10,8 +10,11 @@ public class Meet {
     private Long id;
     private Date fecha;
     private MeetPlace meetPlace;
+    private Provider provider;
+    private Customer customer;
+    //dummys
     private int colorResource;
-
+    private String fechaAsString;
 
     public Long getId() {
         return id;
@@ -43,5 +46,29 @@ public class Meet {
 
     public void setColorResource(int colorResource) {
         this.colorResource = colorResource;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public String getFechaAsString() {
+        return fechaAsString;
+    }
+
+    public void setFechaAsString(String fechaAsString) {
+        this.fechaAsString = fechaAsString;
     }
 }

@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -19,7 +21,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.hernan.esmiturno.adapter.MeetNewAdapter;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
+import com.example.hernan.esmiturno.model.Customer;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.MeetPlace;
+import com.example.hernan.esmiturno.model.Provider;
 import com.example.hernan.esmiturno.util.DatePickerFragment;
 
 import org.json.JSONArray;
@@ -41,6 +46,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private EditText editDate;
     private EditText editProv;
     private EditText editPlace;
+    private AutoCompleteTextView editCustom;
     private Button search;
     private int[] colors;
 
@@ -49,12 +55,18 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayList<Meet> blackMeetList = new ArrayList<>();
     private ArrayList<Meet> meetList = new ArrayList<>();
 
+    private static final String[] COUNTRIES = new String[] {
+            "Belgium", "France", "Italy", "Germany", "Spain"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_meet);
 
         colors = getResources().getIntArray(R.array.initial_colors);
+
+        editCustom = (AutoCompleteTextView) findViewById(R.id.dummy);
         editDate = (EditText) findViewById(R.id.fecha);
         editProv = (EditText) findViewById(R.id.txtProv);
         editPlace = (EditText) findViewById(R.id.txtPlace);
@@ -66,6 +78,11 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                 searchMeets(mctx,"1");
             }
         });
+
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+//                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+//        dummy.setAdapter(adapter);
+
     }
 
     private void searchMeets(final Context mctx, final String idUser){
@@ -108,6 +125,9 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                                     Meet meeto = new Meet();
                                     meeto.setFecha(basecal.getTime());
                                     meeto.setColorResource(colors[8]);
+                                    meeto.setMeetPlace(new MeetPlace(Long.parseLong(editPlace.getText().toString())));
+                                    meeto.setProvider(new Provider(Long.parseLong(editProv.getText().toString())));
+                                    meeto.setCustomer(new Customer(Long.parseLong(editCustom.getText().toString())));
                                     meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);

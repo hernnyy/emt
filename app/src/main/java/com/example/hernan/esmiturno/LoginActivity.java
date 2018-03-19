@@ -342,7 +342,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            String url = "http://ikaroira.com/ws-user.php/loginUser";
+            String url = "http://ikaroira.com/ws-user.php/login";
             StringRequest strRequest = new StringRequest(Request.Method.POST, url,
                     new Response.Listener<String>()
                     {

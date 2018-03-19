@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <MultiAutoCompleteTextView
-            android:id="@+id/multiAutoCompleteTextView2"
+        <AutoCompleteTextView
+            android:id="@+id/dummy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -55,12 +55,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ems="10"
-            android:inputType="date"
-            android:focusable="false"
             android:clickable="true"
-            android:maxLines="1"
-            android:hint="Fecha del turno"/>
+            android:ems="10"
+            android:focusable="false"
+            android:hint="Fecha del turno"
+            android:inputType="date"
+            android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
