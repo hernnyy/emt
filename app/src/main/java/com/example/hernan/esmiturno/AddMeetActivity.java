@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -21,10 +22,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.hernan.esmiturno.adapter.MeetNewAdapter;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
+import com.example.hernan.esmiturno.adapter.list.AutoCompleteArrayAdapter;
 import com.example.hernan.esmiturno.model.Customer;
 import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.model.MeetPlace;
 import com.example.hernan.esmiturno.model.Provider;
+import com.example.hernan.esmiturno.model.list.AutoCompleteDTO;
 import com.example.hernan.esmiturno.util.DatePickerFragment;
 
 import org.json.JSONArray;
@@ -44,8 +47,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     private Context mctx = this;
     private EditText editDate;
-    private EditText editProv;
-    private EditText editPlace;
+    private AutoCompleteTextView editProv;
+    private AutoCompleteTextView editPlace;
     private AutoCompleteTextView editCustom;
     private Button search;
     private int[] colors;
@@ -55,9 +58,10 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayList<Meet> blackMeetList = new ArrayList<>();
     private ArrayList<Meet> meetList = new ArrayList<>();
 
-    private static final String[] COUNTRIES = new String[] {
-            "Belgium", "France", "Italy", "Germany", "Spain"
-    };
+    //helpers
+    private Long idSelectedProvider;
+    private Long idSelectedCustomer;
+    private Long idSelectedPlace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +69,29 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_add_meet);
 
         colors = getResources().getIntArray(R.array.initial_colors);
+        Bundle bundle = getIntent().getExtras();
+//        String fraseimportada=bundle.getString("email");
+        final String idUser = bundle.getString("idUser");
 
-        editCustom = (AutoCompleteTextView) findViewById(R.id.dummy);
+        idSelectedCustomer = null;
+        editCustom = (AutoCompleteTextView) findViewById(R.id.txtCust);
+        loadCustomersOption(this,"0", editCustom);
+        editCustom.setOnItemClickListener(onItemCustomerClickListener);
+
+        idSelectedProvider = null;
+        editProv = (AutoCompleteTextView) findViewById(R.id.txtProv);
+        loadProviderOption(mctx,idUser,editProv);
+        editProv.setOnItemClickListener(onItemProviderClickListener);
+
+        editPlace = (AutoCompleteTextView) findViewById(R.id.txtPlace);
+
         editDate = (EditText) findViewById(R.id.fecha);
-        editProv = (EditText) findViewById(R.id.txtProv);
-        editPlace = (EditText) findViewById(R.id.txtPlace);
         editDate.setOnClickListener(this);
         search = (Button) findViewById(R.id.searchMeet);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchMeets(mctx,"1");
+                searchMeets(mctx,idUser);
             }
         });
 
@@ -85,6 +101,11 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /**
+     * recordar que este metodo solo busca proveedores
+     * @param mctx
+     * @param idUser
+     */
     private void searchMeets(final Context mctx, final String idUser){
 //        String url = "http://ikaroira.com/ws-meet.php/getAll";
         String url = "http://ikaroira.com/ws-meet.php/search";
@@ -126,8 +147,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                                     meeto.setFecha(basecal.getTime());
                                     meeto.setColorResource(colors[8]);
                                     meeto.setMeetPlace(new MeetPlace(Long.parseLong(editPlace.getText().toString())));
-                                    meeto.setProvider(new Provider(Long.parseLong(editProv.getText().toString())));
-                                    meeto.setCustomer(new Customer(Long.parseLong(editCustom.getText().toString())));
+                                    meeto.setProvider(new Provider(idSelectedProvider));
+                                    meeto.setCustomer(new Customer(idSelectedCustomer));//TODO obtener el id customer del usuario actual
                                     meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);
@@ -212,5 +233,111 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                 showDatePickerDialog();
                 break;
         }
+    }
+
+    private AdapterView.OnItemClickListener onItemCustomerClickListener =
+            new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.d("id selected:", ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId().toString());
+                    idSelectedCustomer = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId();
+                }
+            };
+
+    private AdapterView.OnItemClickListener onItemProviderClickListener =
+            new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.d("id selected:", ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId().toString());
+                    idSelectedProvider = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId();
+                }
+            };
+
+
+
+    private void loadCustomersOption(final Context mctx, final String idUser,final AutoCompleteTextView editCustom){
+        String url = "http://ikaroira.com/ws-user.php/getAllCust/"+idUser;
+        StringRequest strRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONArray jsonResp = new JSONArray(response);
+                            Log.d("Response json:", jsonResp.toString());
+
+//                            String[] customs = new String[jsonResp.length()];
+                            ArrayList<AutoCompleteDTO> customs = new ArrayList<>();
+                            for (int i=0;i<jsonResp.length();i++){
+                                customs.add(new AutoCompleteDTO(jsonResp.getJSONObject(i).getLong("idCustomer"),
+                                        jsonResp.getJSONObject(i).getString("username")));
+                            }
+//                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
+//                                    android.R.layout.simple_dropdown_item_1line, customs);
+                            AutoCompleteArrayAdapter adapter =  new AutoCompleteArrayAdapter(mctx,
+                                    android.R.layout.simple_spinner_dropdown_item, customs);
+                            editCustom.setAdapter(adapter);
+                        } catch (Throwable t) {
+                            Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            Log.e("My App",t.getMessage());
+                            t.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        NetManager.getInstance(this).addToRequestQueue(strRequest);
+
+    }
+
+    private void loadProviderOption(final Context mctx, final String idUser,final AutoCompleteTextView edit){
+        String url = "http://ikaroira.com/ws-user.php/getAllProv/"+idUser;
+        StringRequest strRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONArray jsonResp = new JSONArray(response);
+                            Log.d("Response json:", jsonResp.toString());
+
+//                            String[] customs = new String[jsonResp.length()];
+                            ArrayList<AutoCompleteDTO> customs = new ArrayList<>();
+                            for (int i=0;i<jsonResp.length();i++){
+                                customs.add(new AutoCompleteDTO(jsonResp.getJSONObject(i).getLong("idProvider"),
+                                        jsonResp.getJSONObject(i).getString("username")));
+                            }
+//                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
+//                                    android.R.layout.simple_dropdown_item_1line, customs);
+                            AutoCompleteArrayAdapter adapter =  new AutoCompleteArrayAdapter(mctx,
+                                    android.R.layout.simple_spinner_dropdown_item, customs);
+                            edit.setAdapter(adapter);
+                        } catch (Throwable t) {
+                            Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            Log.e("My App",t.getMessage());
+                            t.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        NetManager.getInstance(this).addToRequestQueue(strRequest);
+
     }
 }

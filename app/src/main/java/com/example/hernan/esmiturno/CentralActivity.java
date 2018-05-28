@@ -90,21 +90,7 @@ public class CentralActivity extends AppCompatActivity {
         setContentView(R.layout.activity_central);
         contexto = this;
         mTextMessage = (TextView) findViewById(R.id.message);
-        dummyBoton = (Button) findViewById(R.id.dummyBoton);
-//        mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
-//        mMeetTableList.removeAllViews();
-        dummyBoton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(contexto, AddMeetActivity.class);
-//                    intent.putExtra("idMeet",rowData.getString("id"));
-                    contexto.startActivity(intent);
-                } catch (Throwable t) {
-                    Log.e("My App", "Could not intent");
-                }
-            }
-        });
+
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -113,6 +99,23 @@ public class CentralActivity extends AppCompatActivity {
 //        String fraseimportada=bundle.getString("email");
         idUser = bundle.getString("id");
 //        Log.d("email: ", fraseimportada);
+
+        dummyBoton = (Button) findViewById(R.id.dummyBoton);
+//        mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
+//        mMeetTableList.removeAllViews();
+        dummyBoton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(contexto, AddMeetActivity.class);
+                    intent.putExtra("idUser",idUser);
+                    contexto.startActivity(intent);
+                } catch (Throwable t) {
+                    Log.e("My App", "Could not intent");
+                }
+            }
+        });
+
         homeTabCreate(contexto,idUser);
     }
 

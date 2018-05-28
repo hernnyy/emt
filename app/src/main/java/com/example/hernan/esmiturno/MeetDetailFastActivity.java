@@ -134,7 +134,7 @@ public class MeetDetailFastActivity extends AppCompatActivity {
                         {
                             SimpleDateFormat dateForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                             Map<String, String> params = new HashMap<String, String>();
-                            params.put("date", dateForm.format((Date) bundle.get("objectDate")));
+                            params.put("date", dateForm.format((Date) bundle .get("objectDate")));
                             params.put("fk_id_emt_customers", cust.getText().toString());
                             params.put("fk_id_emt_providers", prov.getText().toString());
                             params.put("fk_id_emt_meetplaces", lugar.getText().toString());
