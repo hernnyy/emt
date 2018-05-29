@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class Provider {
     private Long id;
+    private Long dots;
 
     public Provider(Long id) {
         this.id = id;
