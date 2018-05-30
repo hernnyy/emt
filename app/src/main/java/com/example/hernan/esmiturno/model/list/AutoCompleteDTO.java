@@ -1,12 +1,21 @@
 package com.example.hernan.esmiturno.model.list;
 
+import com.example.hernan.esmiturno.model.Customer;
+import com.example.hernan.esmiturno.model.Provider;
+import com.example.hernan.esmiturno.model.User;
+
 public class AutoCompleteDTO {
     private Long id;
     private String description;
 
-    public AutoCompleteDTO(Long id, String description) {
-        this.id = id;
-        this.description = description;
+    public AutoCompleteDTO(User user, Customer customer) {
+        this.id = customer.getId();
+        this.description = user.getUsername();
+    }
+
+    public AutoCompleteDTO(User user, Provider provider) {
+        this.id = provider.getId();
+        this.description = user.getUsername();
     }
 
     public String getDescription() {

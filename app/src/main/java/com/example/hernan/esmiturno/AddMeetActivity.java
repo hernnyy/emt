@@ -27,8 +27,10 @@ import com.example.hernan.esmiturno.model.Customer;
 import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.model.MeetPlace;
 import com.example.hernan.esmiturno.model.Provider;
+import com.example.hernan.esmiturno.model.User;
 import com.example.hernan.esmiturno.model.list.AutoCompleteDTO;
 import com.example.hernan.esmiturno.util.DatePickerFragment;
+import com.example.hernan.esmiturno.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,6 +65,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private Long idSelectedCustomer;
     private Long idSelectedPlace;
 
+    private User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,16 +75,22 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
         colors = getResources().getIntArray(R.array.initial_colors);
         Bundle bundle = getIntent().getExtras();
 //        String fraseimportada=bundle.getString("email");
-        final String idUser = bundle.getString("idUser");
+//        final String idUser = bundle.getString("idUser");
+        user = (User) bundle.get("userSS");
 
-        idSelectedCustomer = null;
         editCustom = (AutoCompleteTextView) findViewById(R.id.txtCust);
+        if (user.getCustomer() != null){
+            idSelectedCustomer = user.getCustomer().getId();
+            editCustom.setText(user.getUsername());
+        }else {
+            idSelectedCustomer = null;
+        }
         loadCustomersOption(this,"0", editCustom);
         editCustom.setOnItemClickListener(onItemCustomerClickListener);
 
         idSelectedProvider = null;
         editProv = (AutoCompleteTextView) findViewById(R.id.txtProv);
-        loadProviderOption(mctx,idUser,editProv);
+        loadProviderOption(this, user, editProv);
         editProv.setOnItemClickListener(onItemProviderClickListener);
 
         editPlace = (AutoCompleteTextView) findViewById(R.id.txtPlace);
@@ -91,7 +101,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchMeets(mctx,idUser);
+                searchMeets(mctx,user);
             }
         });
 
@@ -104,9 +114,9 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     /**
      * recordar que este metodo solo busca proveedores
      * @param mctx
-     * @param idUser
+     * @param user
      */
-    private void searchMeets(final Context mctx, final String idUser){
+    private void searchMeets(final Context mctx, final User user){
 //        String url = "http://ikaroira.com/ws-meet.php/getAll";
         String url = "http://ikaroira.com/ws-meet.php/search";
         StringRequest strRequest = new StringRequest(Request.Method.POST, url,
@@ -148,7 +158,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                                     meeto.setColorResource(colors[8]);
                                     meeto.setMeetPlace(new MeetPlace(Long.parseLong(editPlace.getText().toString())));
                                     meeto.setProvider(new Provider(idSelectedProvider));
-                                    meeto.setCustomer(new Customer(idSelectedCustomer));//TODO obtener el id customer del usuario actual
+                                    meeto.setCustomer(new Customer(idSelectedCustomer));
                                     meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);
@@ -181,7 +191,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
             protected Map<String, String> getParams()
             {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("id", idUser);
+                params.put("id", user.getId().toString());
                 params.put("date", editDate.getText().toString());
                 return params;
             }
@@ -271,8 +281,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 //                            String[] customs = new String[jsonResp.length()];
                             ArrayList<AutoCompleteDTO> customs = new ArrayList<>();
                             for (int i=0;i<jsonResp.length();i++){
-                                customs.add(new AutoCompleteDTO(jsonResp.getJSONObject(i).getLong("idCustomer"),
-                                        jsonResp.getJSONObject(i).getString("username")));
+                                User user = Util.parseJSONToUser(jsonResp.getJSONObject(i));
+                                customs.add(new AutoCompleteDTO(user, user.getCustomer()));
                             }
 //                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
 //                                    android.R.layout.simple_dropdown_item_1line, customs);
@@ -298,8 +308,8 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void loadProviderOption(final Context mctx, final String idUser,final AutoCompleteTextView edit){
-        String url = "http://ikaroira.com/ws-user.php/getAllProv/"+idUser;
+    private void loadProviderOption(final Context mctx, final User user,final AutoCompleteTextView edit){
+        String url = "http://ikaroira.com/ws-user.php/getAllProv/"+user.getId().toString();
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
                 {
@@ -314,8 +324,9 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 //                            String[] customs = new String[jsonResp.length()];
                             ArrayList<AutoCompleteDTO> customs = new ArrayList<>();
                             for (int i=0;i<jsonResp.length();i++){
-                                customs.add(new AutoCompleteDTO(jsonResp.getJSONObject(i).getLong("idProvider"),
-                                        jsonResp.getJSONObject(i).getString("username")));
+
+                                User user = Util.parseJSONToUser(jsonResp.getJSONObject(i));
+                                customs.add(new AutoCompleteDTO(user, user.getProvider()));
                             }
 //                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
 //                                    android.R.layout.simple_dropdown_item_1line, customs);

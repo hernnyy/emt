@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +41,7 @@ import java.util.Locale;
 
 public class CentralActivity extends AppCompatActivity {
 
-    private String idUser;
+    private User user;
     private TextView mTextMessage;
     private Button dummyBoton;
 
@@ -61,7 +62,7 @@ public class CentralActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
                     mTextMessage.setVisibility(View.VISIBLE);
-                    homeTabCreate(contexto,idUser);
+                    homeTabCreate(contexto,user);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -97,7 +98,8 @@ public class CentralActivity extends AppCompatActivity {
         //se recogen datos de la anterior pantalla
         Bundle bundle = getIntent().getExtras();
 //        String fraseimportada=bundle.getString("email");
-        idUser = bundle.getString("id");
+//        idUser = bundle.getString("id");
+        user = (User) bundle.get("userSS");
 //        Log.d("email: ", fraseimportada);
 
         dummyBoton = (Button) findViewById(R.id.dummyBoton);
@@ -108,7 +110,8 @@ public class CentralActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(contexto, AddMeetActivity.class);
-                    intent.putExtra("idUser",idUser);
+//                    intent.putExtra("idUser",idUser);
+                    intent.putExtra("userSS",user);
                     contexto.startActivity(intent);
                 } catch (Throwable t) {
                     Log.e("My App", "Could not intent");
@@ -116,12 +119,14 @@ public class CentralActivity extends AppCompatActivity {
             }
         });
 
-        homeTabCreate(contexto,idUser);
+        homeTabCreate(contexto,user);
     }
 
-    private void homeTabCreate(final Context mctx, final String idUser){
-//        String url = "http://ikaroira.com/ws-meet.php/getAll";
-        String url = "http://ikaroira.com/ws-meet.php/getAllByUser/"+idUser;
+    private void homeTabCreate(final Context mctx, final User user){
+
+        clearHomeViews();
+
+        String url = "http://ikaroira.com/ws-meet.php/getAllByUser/"+user.getId().toString();
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
                 {
@@ -140,11 +145,11 @@ public class CentralActivity extends AppCompatActivity {
 
                             colors = getResources().getIntArray(R.array.initial_colors);
                             for (int i=0;i<jsonCust.length();i++){
-                                addRowToTableMeet(jsonCust.getJSONObject(i),mctx);
+                                addRowToTableMeet(jsonCust.getJSONObject(i),colors[10]);
 
                             }
                             for (int i=0;i<jsonProv.length();i++){
-                                addRowToTableMeet(jsonProv.getJSONObject(i),mctx);
+                                addRowToTableMeet(jsonProv.getJSONObject(i),colors[9]);
                             }
 
                             if (adapter == null) {
@@ -181,35 +186,7 @@ public class CentralActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void addRowToTableMeet(final JSONObject rowData,final Context mctx){
-//        LinearLayout outerLayout = new LinearLayout(this);
-//        TableRow row= new TableRow(this);
-//        TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT);
-//        lp.setMargins(10,0,10,10);
-//        row.setLayoutParams(lp);
-//        row.setBackgroundColor(Color.WHITE);
-//        row.setClickable(true);
-//        row.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                TableRow tr = (TableRow)v;
-//                tr.setBackgroundColor(Color.MAGENTA);
-//                try {
-//                    Intent intent = new Intent(mctx, MeetDetailFastActivity.class);
-//                    intent.putExtra("idMeet",rowData.getString("id"));
-//                    mctx.startActivity(intent);
-//                } catch (Throwable t) {
-//                    Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
-//                }
-//            }
-//        });
-//        row.setOnTouchListener(new View.OnTouchListener(){
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event){
-//                Log.d("evento: ", event.toString());
-//                return true;
-//            }
-//        });
+    private void addRowToTableMeet(final JSONObject rowData, int color){
         try {
             Meet meeto = new Meet();
             meeto.setId(Long.valueOf(rowData.getString("id")));
@@ -218,7 +195,7 @@ public class CentralActivity extends AppCompatActivity {
             Date convertedDate = readFormat.parse(rowData.getString("fecha"));
 
             meeto.setFecha(convertedDate);
-            meeto.setColorResource(colors[10]);
+            meeto.setColorResource(color);
             meetList.add(meeto);
         } catch (ParseException e) {
             Log.e("My App", "Could not parse date: \"" + rowData + "\"");
@@ -227,49 +204,6 @@ public class CentralActivity extends AppCompatActivity {
             Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
         }
 
-
-//        TextView head = new TextView(this);
-//        if (rowData != null){
-//            try {
-//                head.setText("Turno "+rowData.getString("fecha"));
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }else{
-//            head.setText("Turno Dummy");
-//        }
-//        LinearLayout.LayoutParams textLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        textLayoutParams.setMargins(20, 0, 0, 0);
-//
-//        TextView body = new TextView(this);
-//        body.setText("Este es un turno");
-//        LinearLayout.LayoutParams pictureLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        pictureLayoutParams.setMargins(20, 0, 0, 0);
-//
-//        outerLayout.setOrientation(LinearLayout.VERTICAL);
-//        outerLayout.addView(head, textLayoutParams);
-//        outerLayout.addView(body, pictureLayoutParams);
-//        row.addView(outerLayout);
-//
-//
-////            row.addView(head);
-////            row.addView(body);
-//        mMeetTableList.addView(row);
-//
-//        addSeparatorToTableMeet();
-
     }
-//
-//    private void addSeparatorToTableMeet(){
-//        TableRow separator = new TableRow(this);
-//        View line = new View(this);
-//        TableRow.LayoutParams separatorLayoutParams = new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 30);
-//        separatorLayoutParams.setMargins(0, 0, 0, 0);
-////            line.setBackgroundColor(Color.BLUE);
-//        separator.addView(line, separatorLayoutParams);
-//
-//        mMeetTableList.addView(separator);
-//
-//    }
 
 }

@@ -1,12 +1,12 @@
 package com.example.hernan.esmiturno.model;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  * Created by Hernan on 7/11/2017.
  */
 
-public class Provider {
+public class Provider implements Serializable {
     private Long id;
     private Long dots;
 
@@ -22,4 +22,11 @@ public class Provider {
         this.id = id;
     }
 
+    public Long getDots() {
+        return dots;
+    }
+
+    public void setDots(Long dots) {
+        this.dots = dots;
+    }
 }

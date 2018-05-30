@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.hernan.esmiturno.util.Util;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.loopj.android.http.*;
 
@@ -363,11 +364,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
 
                                 Intent intent = new Intent (mctx, CentralActivity.class);
-//                                intent.putExtra("email",jsonResp.getString("email"));
-                                intent.putExtra("id",jsonResp.getString("id"));//TODO recuper el ubjeto usuario
+                                intent.putExtra("userSS", Util.parseJSONToUser(jsonResp));
+//                                intent.putExtra("id",jsonResp.getString("id"));
                                 startActivityForResult(intent, 0);
                             } catch (Throwable t) {
-                                Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                                Log.e("My App LA", "Could not parse malformed JSON: \"" + response + "\"");
+                                t.printStackTrace();
                             }
                         }
                     },

@@ -1,10 +1,12 @@
 package com.example.hernan.esmiturno.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Hernan on 12/11/2017.
  */
 
-public class MeetPlace {
+public class MeetPlace implements Serializable {
     private Long id;
     private Addres addres;
 
