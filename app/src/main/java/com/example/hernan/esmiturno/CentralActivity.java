@@ -27,6 +27,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.hernan.esmiturno.adapter.MeetSimpleAdapter;
 import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.model.User;
+import com.example.hernan.esmiturno.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +51,6 @@ public class CentralActivity extends AppCompatActivity {
     private ArrayList<Meet> meetList = new ArrayList<>();
     private int[] colors;
 
-//    private TableLayout mMeetTableList;
     private Context contexto;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -62,12 +62,13 @@ public class CentralActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
                     mTextMessage.setVisibility(View.VISIBLE);
+                    clearHomeViews();
                     homeTabCreate(contexto,user);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
                     mTextMessage.setVisibility(View.VISIBLE);
-
+                    clearHomeViews();
                     dashboardTabCreate();
                     return true;
                 case R.id.navigation_notifications:
@@ -136,20 +137,19 @@ public class CentralActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonResp = new JSONObject(response);
-//                            Log.d("Response json:", jsonResp.toString());
-//                            Log.d("Response json:", String.valueOf(jsonResp.length()));
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
                             JSONArray jsonCust = jsonResp.getJSONArray("custom");
                             JSONArray jsonProv = jsonResp.getJSONArray("provider");
 
                             colors = getResources().getIntArray(R.array.initial_colors);
                             for (int i=0;i<jsonCust.length();i++){
-                                addRowToTableMeet(jsonCust.getJSONObject(i),colors[10]);
-
+                                Meet meet = Util.parseJSONToMeet(jsonCust.getJSONObject(i));
+                                meet.setColorResource(colors[10]);
+                                meetList.add(meet);
                             }
                             for (int i=0;i<jsonProv.length();i++){
-                                addRowToTableMeet(jsonProv.getJSONObject(i),colors[9]);
+                                Meet meet = Util.parseJSONToMeet(jsonProv.getJSONObject(i));
+                                meet.setColorResource(colors[9]);
+                                meetList.add(meet);
                             }
 
                             if (adapter == null) {
@@ -162,6 +162,7 @@ public class CentralActivity extends AppCompatActivity {
 
                         } catch (Throwable t) {
                             Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            t.printStackTrace();
                         }
                     }
                 },
@@ -184,26 +185,6 @@ public class CentralActivity extends AppCompatActivity {
         meetList.clear();
         recyclerView.removeAllViews();
         adapter.notifyDataSetChanged();
-    }
-
-    private void addRowToTableMeet(final JSONObject rowData, int color){
-        try {
-            Meet meeto = new Meet();
-            meeto.setId(Long.valueOf(rowData.getString("id")));
-            DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss",Locale.getDefault());
-
-            Date convertedDate = readFormat.parse(rowData.getString("fecha"));
-
-            meeto.setFecha(convertedDate);
-            meeto.setColorResource(color);
-            meetList.add(meeto);
-        } catch (ParseException e) {
-            Log.e("My App", "Could not parse date: \"" + rowData + "\"");
-            e.printStackTrace();
-        } catch (Throwable t) {
-            Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
-        }
-
     }
 
 }

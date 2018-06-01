@@ -73,6 +73,7 @@ public class MeetViewHolder extends RecyclerView.ViewHolder {
                 try {
                     Intent intent = new Intent(mctx, MeetDetailFastActivity.class);
                     intent.putExtra("idMeet",meetList.get(requestCode).getId().toString());
+                    intent.putExtra("meetSS",meetList.get(requestCode));
                     mctx.startActivity(intent);
                 } catch (Throwable t) {
                     Log.e("My App", "Could not pass: \"" + meetList + "\"");

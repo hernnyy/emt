@@ -17,6 +17,17 @@ public class Meet implements Serializable {
     private int colorResource;
     private String fechaAsString;
 
+    public Meet(Long id, Date fecha, MeetPlace meetPlace, User userProvider, User userCustomer) {
+        this.id = id;
+        this.fecha = fecha;
+        this.meetPlace = meetPlace;
+        this.userProvider = userProvider;
+        this.userCustomer = userCustomer;
+    }
+
+    public Meet() {
+    }
+
     public Long getId() {
         return id;
     }

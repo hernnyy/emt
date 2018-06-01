@@ -18,24 +18,23 @@ import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.model.User;
 import com.example.hernan.esmiturno.util.Util;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class MeetDetailFastActivity extends AppCompatActivity {
 
-    private String idMeet;
     private TextView idTurno;
     private TextView lugar;
     private TextView fecha;
-    private TextView prov;
-    private TextView cust;
-    private Button addButton;
+    private TextView providerTxt;
+    private TextView customerTxt;
+    private TextView codigoTxt;
+    private TextView especialidadTxt;
+    private TextView credencialTxt;
+    private TextView prepagaTxt;
+    private Button actionButton;
 
     private User user;
     private Meet meet;
@@ -51,70 +50,80 @@ public class MeetDetailFastActivity extends AppCompatActivity {
 
         final Bundle bundle = getIntent().getExtras();
 
-        idMeet = bundle.getString("idMeet");
         user = (User) bundle.get("userSS");
         meet = (Meet) bundle.get("meetSS");
 
         idTurno =  (TextView) findViewById(R.id.txtMeet);
         lugar =  (TextView) findViewById(R.id.txtPlace);
         fecha =  (TextView) findViewById(R.id.txtDate);
-        prov =  (TextView) findViewById(R.id.txtProvider);
-        cust =  (TextView) findViewById(R.id.txtCustomer);
+        providerTxt =  (TextView) findViewById(R.id.txtProvider);
+        customerTxt =  (TextView) findViewById(R.id.txtCustomer);
+        especialidadTxt =  (TextView) findViewById(R.id.txtEspecialidad);
+        codigoTxt =  (TextView) findViewById(R.id.txtCode);
+        credencialTxt =  (TextView) findViewById(R.id.txtCredential);
+        prepagaTxt =  (TextView) findViewById(R.id.txtPrepaga);
 
-        addButton = (Button) findViewById(R.id.cancelMeet);
+        actionButton = (Button) findViewById(R.id.cancelMeet);
 
-        if (!"".equalsIgnoreCase(idMeet)) {
-            addButton.setOnClickListener(new View.OnClickListener() {
+        if (meet.getId() != null) {
+            actionButton.setOnClickListener(new View.OnClickListener() {
                                              @Override
                                              public void onClick(View v) {
 
 
                                              }
                                          });
-
-            String url = getResources().getString(R.string.MAIN_URL) +
-                    getResources().getString(R.string.MAIN_MEET_SERVICE) +
-                    "getByID/" + idMeet;
-            StringRequest strRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
-                            try {
-                                JSONObject jsonResp = new JSONObject(response);
-//                            Log.d("Response json:", jsonResp.toString());
-//                            Log.d("Response json:", String.valueOf(jsonResp.length()));
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
-//                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
-                                idTurno.setText(jsonResp.getString("id"));
-                                lugar.setText(jsonResp.getString("lugar"));
-                                fecha.setText(jsonResp.getString("fecha"));
+            idTurno.setText(meet.getId().toString());
+            lugar.setText(meet.getMeetPlace().getFantasyName() + " "
+                +meet.getMeetPlace().getAddres().getStreetName() + " "
+                +meet.getMeetPlace().getAddres().getStreetNumber());
+            fecha.setText(Util.getDateAsStringDefault(meet.getFecha()));
+            providerTxt.setText(meet.getUserProvider().getUsername());
+            customerTxt.setText(meet.getUserCustomer().getUsername());
 
 
-                            } catch (Throwable t) {
-                                Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            NetManager.getInstance(this).addToRequestQueue(strRequest);
+//            String url = getResources().getString(R.string.MAIN_URL) +
+//                    getResources().getString(R.string.MAIN_MEET_SERVICE) +
+//                    "getByID/" + idMeet;
+//            StringRequest strRequest = new StringRequest(Request.Method.GET, url,
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+//                            try {
+//                                JSONObject jsonResp = new JSONObject(response);
+////                            Log.d("Response json:", jsonResp.toString());
+////                            Log.d("Response json:", String.valueOf(jsonResp.length()));
+////                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
+////                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
+//                                idTurno.setText(jsonResp.getString("id"));
+//                                lugar.setText(jsonResp.getString("lugar"));
+//                                fecha.setText(jsonResp.getString("fecha"));
+//
+//
+//                            } catch (Throwable t) {
+//                                Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+//                            }
+//                        }
+//                    },
+//                    new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//            NetManager.getInstance(this).addToRequestQueue(strRequest);
         }else{
-            addButton.setText("Confirmar");
-            addButton.setBackgroundColor(getResources().getColor(R.color.blue));
+            actionButton.setText("Confirmar");
+            actionButton.setBackgroundColor(getResources().getColor(R.color.blue));
 
-            idMeet = bundle.getString("idMeet");
 //            idTurno.setText();
             fecha.setText(meet.getFechaAsString());
             lugar.setText(meet.getMeetPlace().getFantasyName());
-            prov.setText(meet.getUserProvider().getUsername());
-            cust.setText(meet.getUserCustomer().getUsername());
+            providerTxt.setText(meet.getUserProvider().getUsername());
+            customerTxt.setText(meet.getUserCustomer().getUsername());
 
-            addButton.setOnClickListener(new View.OnClickListener() {
+            actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String url = getResources().getString(R.string.MAIN_URL) +

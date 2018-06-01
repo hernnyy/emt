@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.hernan.esmiturno.model.Addres;
 import com.example.hernan.esmiturno.model.Contact;
 import com.example.hernan.esmiturno.model.Customer;
+import com.example.hernan.esmiturno.model.Meet;
 import com.example.hernan.esmiturno.model.MeetPlace;
 import com.example.hernan.esmiturno.model.Person;
 import com.example.hernan.esmiturno.model.Provider;
@@ -13,6 +14,8 @@ import com.example.hernan.esmiturno.model.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -93,6 +96,35 @@ public class Util {
         return place;
     }
 
+    public static Meet parseJSONToMeet(JSONObject json) throws JSONException {
+
+        User userProvider = null;
+        if (!"null".equalsIgnoreCase(json.getString("userProvider"))){
+            userProvider = parseJSONToUser(json.getJSONObject("userProvider"));
+        }
+        User userCustomer = null;
+        if (!"null".equalsIgnoreCase(json.getString("userCustomer"))){
+            userCustomer = parseJSONToUser(json.getJSONObject("userCustomer"));
+        }
+        MeetPlace meetplace = null;
+        if (!"null".equalsIgnoreCase(json.getString("meetplace"))){
+            meetplace = parseJSONToMeetPlace(json.getJSONObject("meetplace"));
+        }
+        Date date = null;
+        try {
+            date = Util.getDateMysql(json.getString("fecha"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Meet meet = new Meet(json.getLong("id"),
+                date,
+                meetplace,
+                userProvider,
+                userCustomer);
+        return meet;
+    }
+
     public static String getDateAsStringDefault(Date date) {
         SimpleDateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         return dateForm.format(date);
@@ -103,5 +135,9 @@ public class Util {
         SimpleDateFormat dateForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return dateForm.format(date);
 
+    }
+    public static Date getDateMysql(String date) throws ParseException {
+        DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss",Locale.getDefault());
+        return readFormat.parse(date);
     }
 }
