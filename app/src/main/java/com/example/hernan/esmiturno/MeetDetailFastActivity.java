@@ -14,6 +14,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
+import com.example.hernan.esmiturno.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,6 +37,8 @@ public class MeetDetailFastActivity extends AppCompatActivity {
     private TextView cust;
     private Button addButton;
 
+    private User user;
+    private Meet meet;
 
     private Context contexto;
 
@@ -47,6 +52,8 @@ public class MeetDetailFastActivity extends AppCompatActivity {
         final Bundle bundle = getIntent().getExtras();
 
         idMeet = bundle.getString("idMeet");
+        user = (User) bundle.get("userSS");
+        meet = (Meet) bundle.get("meetSS");
 
         idTurno =  (TextView) findViewById(R.id.txtMeet);
         lugar =  (TextView) findViewById(R.id.txtPlace);
@@ -57,6 +64,14 @@ public class MeetDetailFastActivity extends AppCompatActivity {
         addButton = (Button) findViewById(R.id.cancelMeet);
 
         if (!"".equalsIgnoreCase(idMeet)) {
+            addButton.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+
+
+                                             }
+                                         });
+
             String url = getResources().getString(R.string.MAIN_URL) +
                     getResources().getString(R.string.MAIN_MEET_SERVICE) +
                     "getByID/" + idMeet;
@@ -94,10 +109,10 @@ public class MeetDetailFastActivity extends AppCompatActivity {
 
             idMeet = bundle.getString("idMeet");
 //            idTurno.setText();
-            fecha.setText(bundle.getString("idDate"));
-            lugar.setText(bundle.getString("idPlace"));
-            prov.setText(bundle.getString("idProvider"));
-            cust.setText(bundle.getString("idCustomer"));
+            fecha.setText(meet.getFechaAsString());
+            lugar.setText(meet.getMeetPlace().getFantasyName());
+            prov.setText(meet.getUserProvider().getUsername());
+            cust.setText(meet.getUserCustomer().getUsername());
 
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,11 +127,14 @@ public class MeetDetailFastActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
                                     try {
                                         JSONObject jsonResp = new JSONObject(response);
-                            Log.d("Response json:", jsonResp.toString());
-                            Log.d("Response json:", String.valueOf(jsonResp.length()));
+                                        Log.d("Response json:", jsonResp.toString());
+                                        Log.d("Response json:", String.valueOf(jsonResp.length()));
 //                            Log.d("Response json:", jsonResp.getJSONObject(0).toString());
 //                            Log.d("Response json:", jsonResp.getJSONObject(0).getString("fecha"));
 
+                                        Intent intent = new Intent(contexto, CentralActivity.class);
+                                        intent.putExtra("userSS",user);
+                                        contexto.startActivity(intent);
                                     } catch (Throwable t) {
                                         Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
                                     }
@@ -132,12 +150,11 @@ public class MeetDetailFastActivity extends AppCompatActivity {
                         @Override
                         protected Map<String, String> getParams()
                         {
-                            SimpleDateFormat dateForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                             Map<String, String> params = new HashMap<String, String>();
-                            params.put("date", dateForm.format((Date) bundle .get("objectDate")));
-                            params.put("fk_id_emt_customers", cust.getText().toString());
-                            params.put("fk_id_emt_providers", prov.getText().toString());
-                            params.put("fk_id_emt_meetplaces", lugar.getText().toString());
+                            params.put("date", Util.getDateAsStringToMysql(meet.getFecha()));
+                            params.put("fk_id_emt_customers", meet.getUserCustomer().getCustomer().getId().toString());
+                            params.put("fk_id_emt_providers", meet.getUserProvider().getProvider().getId().toString());
+                            params.put("fk_id_emt_meetplaces", meet.getMeetPlace().getId().toString());
                             return params;
                         }
                     };

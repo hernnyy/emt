@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.hernan.esmiturno.MeetDetailFastActivity;
 import com.example.hernan.esmiturno.R;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
 
 import java.util.ArrayList;
 
@@ -28,14 +29,16 @@ public class MeetViewHolder extends RecyclerView.ViewHolder {
     private Button deleteButton;
     private Context mctx;
     private ArrayList<Meet> meetList;
+    private User user;
 
-    public MeetViewHolder(View v,Context context, ArrayList<Meet> meets) {
+    public MeetViewHolder(View v,Context context, ArrayList<Meet> meets, User user) {
         super(v);
-        initial = (TextView) v.findViewById(R.id.initial);
-        name = (TextView) v.findViewById(R.id.name);
-        deleteButton = (Button) v.findViewById(R.id.delete_button);
-        mctx = context;
-        meetList = meets;
+        this.initial = (TextView) v.findViewById(R.id.initial);
+        this.name = (TextView) v.findViewById(R.id.name);
+        this.deleteButton = (Button) v.findViewById(R.id.delete_button);
+        this.mctx = context;
+        this.meetList = meets;
+        this.user =user;
 //        deleteButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -43,7 +46,7 @@ public class MeetViewHolder extends RecyclerView.ViewHolder {
 //            }
 //        });
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        this.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Pair<View, String> p1 = Pair.create((View) initial, SampleMaterialActivity.TRANSITION_INITIAL);

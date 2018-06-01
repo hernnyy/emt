@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.hernan.esmiturno.CentralActivity;
 import com.example.hernan.esmiturno.R;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
+import com.example.hernan.esmiturno.util.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,12 +25,14 @@ import java.util.Locale;
 public class MeetSimpleAdapter extends RecyclerView.Adapter<MeetViewHolder> {
     private static final String DEBUG_TAG = "MeetSimpleAdapter";
 
-    public Context context;
-    public ArrayList<Meet> meetList;
+    private Context context;
+    private ArrayList<Meet> meetList;
+    private User user;
 
-    public MeetSimpleAdapter(Context context, ArrayList<Meet> meetList) {
+    public MeetSimpleAdapter(Context context, ArrayList<Meet> meetList , User user) {
         this.context = context;
         this.meetList = meetList;
+        this.user = user;
     }
 
     @Override
@@ -36,9 +40,7 @@ public class MeetSimpleAdapter extends RecyclerView.Adapter<MeetViewHolder> {
         TextView initial = viewHolder.getInitial();
         TextView nameTextView = viewHolder.getName();
 
-        SimpleDateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-
-        nameTextView.setText( dateForm.format(meetList.get(position).getFecha()));
+        nameTextView.setText( Util.getDateAsStringDefault(meetList.get(position).getFecha()));
         initial.setBackgroundColor(meetList.get(position).getColorResource());
         initial.setText(String.valueOf(meetList.get(position).getId()));
     }
@@ -126,7 +128,7 @@ public class MeetSimpleAdapter extends RecyclerView.Adapter<MeetViewHolder> {
     public MeetViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         LayoutInflater li = LayoutInflater.from(viewGroup.getContext());
         View v = li.inflate(R.layout.card_view_holder, viewGroup, false);
-        return new MeetViewHolder(v,context,meetList);
+        return new MeetViewHolder(v,context,meetList,user);
     }
 
 }

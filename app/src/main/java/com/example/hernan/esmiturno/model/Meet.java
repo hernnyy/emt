@@ -11,8 +11,8 @@ public class Meet implements Serializable {
     private Long id;
     private Date fecha;
     private MeetPlace meetPlace;
-    private Provider provider;
-    private Customer customer;
+    private User userProvider;
+    private User userCustomer;
     //dummys
     private int colorResource;
     private String fechaAsString;
@@ -49,20 +49,20 @@ public class Meet implements Serializable {
         this.colorResource = colorResource;
     }
 
-    public Provider getProvider() {
-        return provider;
+    public User getUserProvider() {
+        return userProvider;
     }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
+    public void setUserProvider(User userProvider) {
+        this.userProvider = userProvider;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUserCustomer() {
+        return userCustomer;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUserCustomer(User userCustomer) {
+        this.userCustomer = userCustomer;
     }
 
     public String getFechaAsString() {

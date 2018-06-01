@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.hernan.esmiturno.MeetDetailFastActivity;
 import com.example.hernan.esmiturno.R;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
 
 import java.util.ArrayList;
 
@@ -24,14 +25,16 @@ public class MeetNewHolder extends RecyclerView.ViewHolder {
     private Button addButton;
     private Context mctx;
     private ArrayList<Meet> meetList;
+    private User usuario;
 
-    public MeetNewHolder(View v, Context context, ArrayList<Meet> meets) {
+    public MeetNewHolder(View v, Context context, ArrayList<Meet> meets, User user) {
         super(v);
-        date = (TextView) v.findViewById(R.id.new_date);
-        hour = (TextView) v.findViewById(R.id.new_hour);
-        addButton = (Button) v.findViewById(R.id.add_meet_button);
-        mctx = context;
-        meetList = meets;
+        this.date = (TextView) v.findViewById(R.id.new_date);
+        this.hour = (TextView) v.findViewById(R.id.new_hour);
+        this.addButton = (Button) v.findViewById(R.id.add_meet_button);
+        this.mctx = context;
+        this.meetList = meets;
+        this.usuario =user;
 //        deleteButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -66,16 +69,19 @@ public class MeetNewHolder extends RecyclerView.ViewHolder {
                 try {
                     Intent intent = new Intent(mctx, MeetDetailFastActivity.class);
                     intent.putExtra("idMeet","");
+                    intent.putExtra("userSS",usuario);
+                    intent.putExtra("meetSS",meetList.get(requestCode));
 //                    intent.putExtra("oMeet",meetList.get(requestCode));
                     //intent.putExtra("idMeet",meetList.get(requestCode).getId().toString());
-                    intent.putExtra("idProvider",meetList.get(requestCode).getProvider().getId().toString());
-                    intent.putExtra("idCustomer",meetList.get(requestCode).getCustomer().getId().toString());
-                    intent.putExtra("idPlace",meetList.get(requestCode).getMeetPlace().getId().toString());
-                    intent.putExtra("idDate",meetList.get(requestCode).getFechaAsString());
-                    intent.putExtra("objectDate",meetList.get(requestCode).getFecha());
+//                    intent.putExtra("idProvider",meetList.get(requestCode).getProvider().getId().toString());
+//                    intent.putExtra("idCustomer",meetList.get(requestCode).getCustomer().getId().toString());
+//                    intent.putExtra("idPlace",meetList.get(requestCode).getMeetPlace().getId().toString());
+//                    intent.putExtra("idDate",meetList.get(requestCode).getFechaAsString());
+//                    intent.putExtra("objectDate",meetList.get(requestCode).getFecha());
                     mctx.startActivity(intent);
                 } catch (Throwable t) {
                     Log.e("My App", "Could not pass: \"" + meetList + "\"");
+                    t.printStackTrace();
                 }
             }
         });
@@ -112,4 +118,5 @@ public class MeetNewHolder extends RecyclerView.ViewHolder {
     public void setMeetList(ArrayList<Meet> meetList) {
         this.meetList = meetList;
     }
+
 }

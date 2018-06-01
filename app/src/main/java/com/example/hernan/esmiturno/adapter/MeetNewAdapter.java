@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.hernan.esmiturno.AddMeetActivity;
 import com.example.hernan.esmiturno.R;
 import com.example.hernan.esmiturno.model.Meet;
+import com.example.hernan.esmiturno.model.User;
+import com.example.hernan.esmiturno.util.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,10 +27,12 @@ public class MeetNewAdapter extends RecyclerView.Adapter<MeetNewHolder> {
 
     public Context context;
     public ArrayList<Meet> meetList;
+    public User user;
 
-    public MeetNewAdapter(Context context, ArrayList<Meet> meetList) {
+    public MeetNewAdapter(Context context, ArrayList<Meet> meetList ,User user) {
         this.context = context;
         this.meetList = meetList;
+        this.user = user;
     }
 
     @Override
@@ -36,8 +40,7 @@ public class MeetNewAdapter extends RecyclerView.Adapter<MeetNewHolder> {
         TextView initial = viewHolder.getDate();
         TextView nameTextView = viewHolder.getHour();
 
-        SimpleDateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        meetList.get(position).setFechaAsString(dateForm.format(meetList.get(position).getFecha()));
+        meetList.get(position).setFechaAsString(Util.getDateAsStringDefault(meetList.get(position).getFecha()));
         nameTextView.setText(meetList.get(position).getFechaAsString());
 
         initial.setBackgroundColor(meetList.get(position).getColorResource());
@@ -127,7 +130,7 @@ public class MeetNewAdapter extends RecyclerView.Adapter<MeetNewHolder> {
     public MeetNewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         LayoutInflater li = LayoutInflater.from(viewGroup.getContext());
         View v = li.inflate(R.layout.card_meet_new_holder, viewGroup, false);
-        return new MeetNewHolder(v,context,meetList);
+        return new MeetNewHolder(v,context,meetList,user);
     }
 
 }

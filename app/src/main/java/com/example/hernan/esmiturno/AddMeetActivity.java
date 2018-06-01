@@ -61,9 +61,9 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayList<Meet> meetList = new ArrayList<>();
 
     //helpers
-    private Long idSelectedProvider;
-    private Long idSelectedCustomer;
-    private Long idSelectedPlace;
+    private User selectedProvider;
+    private User selectedCustomer;
+    private MeetPlace selectedPlace;
 
     private User user;
 
@@ -80,20 +80,23 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
         editCustom = (AutoCompleteTextView) findViewById(R.id.txtCust);
         if (user.getCustomer() != null){
-            idSelectedCustomer = user.getCustomer().getId();
+            selectedCustomer = user;
             editCustom.setText(user.getUsername());
         }else {
-            idSelectedCustomer = null;
+            selectedCustomer = null;
         }
         loadCustomersOption(this,"0", editCustom);
         editCustom.setOnItemClickListener(onItemCustomerClickListener);
 
-        idSelectedProvider = null;
+        selectedProvider = null;
         editProv = (AutoCompleteTextView) findViewById(R.id.txtProv);
         loadProviderOption(this, user, editProv);
         editProv.setOnItemClickListener(onItemProviderClickListener);
 
+        selectedPlace = null;
         editPlace = (AutoCompleteTextView) findViewById(R.id.txtPlace);
+        loadPlaceOption(this,user,editPlace);
+        editPlace.setOnItemClickListener(onItemPlaceClickListener);
 
         editDate = (EditText) findViewById(R.id.fecha);
         editDate.setOnClickListener(this);
@@ -156,16 +159,16 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                                     Meet meeto = new Meet();
                                     meeto.setFecha(basecal.getTime());
                                     meeto.setColorResource(colors[8]);
-                                    meeto.setMeetPlace(new MeetPlace(Long.parseLong(editPlace.getText().toString())));
-                                    meeto.setProvider(new Provider(idSelectedProvider));
-                                    meeto.setCustomer(new Customer(idSelectedCustomer));
+                                    meeto.setMeetPlace(selectedPlace);
+                                    meeto.setUserProvider(selectedProvider);
+                                    meeto.setUserCustomer(selectedCustomer);
                                     meetList.add(meeto);
                                 }
                                 basecal.add(Calendar.MINUTE,15);
                             }
 
                             if (adapter == null) {
-                                adapter = new MeetNewAdapter(mctx, meetList);
+                                adapter = new MeetNewAdapter(mctx, meetList,user);
                             }
                             recyclerView = (RecyclerView) findViewById(R.id.recycler_new_view);
                             recyclerView.setAdapter(adapter);
@@ -250,7 +253,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.d("id selected:", ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId().toString());
-                    idSelectedCustomer = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId();
+                    selectedCustomer = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getCustomer();
                 }
             };
 
@@ -259,7 +262,16 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.d("id selected:", ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId().toString());
-                    idSelectedProvider = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId();
+                    selectedProvider = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getProvider();
+                }
+            };
+
+    private AdapterView.OnItemClickListener onItemPlaceClickListener =
+            new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.d("id selected:", ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getId().toString());
+                    selectedPlace = ((AutoCompleteDTO)adapterView.getItemAtPosition(i)).getMeetplace();
                 }
             };
 
@@ -327,6 +339,51 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
                                 User user = Util.parseJSONToUser(jsonResp.getJSONObject(i));
                                 customs.add(new AutoCompleteDTO(user, user.getProvider()));
+                            }
+//                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
+//                                    android.R.layout.simple_dropdown_item_1line, customs);
+                            AutoCompleteArrayAdapter adapter =  new AutoCompleteArrayAdapter(mctx,
+                                    android.R.layout.simple_spinner_dropdown_item, customs);
+                            edit.setAdapter(adapter);
+                        } catch (Throwable t) {
+                            Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            Log.e("My App",t.getMessage());
+                            t.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        NetManager.getInstance(this).addToRequestQueue(strRequest);
+
+    }
+
+
+    private void loadPlaceOption(final Context mctx, final User user, final AutoCompleteTextView edit){
+        String url = "http://ikaroira.com/ws-user.php/getAllPlaces";
+        StringRequest strRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONArray jsonResp = new JSONArray(response);
+                            Log.d("Response json:", jsonResp.toString());
+
+//                            String[] customs = new String[jsonResp.length()];
+                            ArrayList<AutoCompleteDTO> customs = new ArrayList<>();
+                            for (int i=0;i<jsonResp.length();i++){
+
+                                MeetPlace meetplace = Util.parseJSONToMeetPlace(jsonResp.getJSONObject(i));
+                                customs.add(new AutoCompleteDTO(meetplace));
                             }
 //                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mctx,
 //                                    android.R.layout.simple_dropdown_item_1line, customs);

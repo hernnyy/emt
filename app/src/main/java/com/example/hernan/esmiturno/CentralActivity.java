@@ -124,7 +124,7 @@ public class CentralActivity extends AppCompatActivity {
 
     private void homeTabCreate(final Context mctx, final User user){
 
-        clearHomeViews();
+//        clearHomeViews();
 
         String url = "http://ikaroira.com/ws-meet.php/getAllByUser/"+user.getId().toString();
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
@@ -153,7 +153,7 @@ public class CentralActivity extends AppCompatActivity {
                             }
 
                             if (adapter == null) {
-                                adapter = new MeetSimpleAdapter(mctx, meetList);
+                                adapter = new MeetSimpleAdapter(mctx, meetList, user);
                             }
                             recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
                             recyclerView.setAdapter(adapter);
