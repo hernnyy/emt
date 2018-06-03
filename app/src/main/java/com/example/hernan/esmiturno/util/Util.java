@@ -126,18 +126,21 @@ public class Util {
     }
 
     public static String getDateAsStringDefault(Date date) {
-        SimpleDateFormat dateForm = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        return dateForm.format(date);
-
+        return getDateAsString(date,"dd/MM/yyyy HH:mm");
     }
-
     public static String getDateAsStringToMysql(Date date) {
-        SimpleDateFormat dateForm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return dateForm.format(date);
-
+        return getDateAsString(date,"yyyy-MM-dd HH:mm:ss");
     }
     public static Date getDateMysql(String date) throws ParseException {
         DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss",Locale.getDefault());
         return readFormat.parse(date);
+    }
+    public static Date getDateFromDatePickerFormat(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        return sdf.parse(date);
+    }
+    public static String getDateAsString(Date date, String format) {
+        SimpleDateFormat dateForm = new SimpleDateFormat(format, Locale.getDefault());
+        return dateForm.format(date);
     }
 }

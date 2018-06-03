@@ -49,6 +49,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     private Context mctx = this;
     private EditText editDate;
+    private String dateAsStringToSearch;
     private AutoCompleteTextView editProv;
     private AutoCompleteTextView editPlace;
     private AutoCompleteTextView editCustom;
@@ -74,8 +75,6 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
         colors = getResources().getIntArray(R.array.initial_colors);
         Bundle bundle = getIntent().getExtras();
-//        String fraseimportada=bundle.getString("email");
-//        final String idUser = bundle.getString("idUser");
         user = (User) bundle.get("userSS");
 
         editCustom = (AutoCompleteTextView) findViewById(R.id.txtCust);
@@ -140,13 +139,10 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
                                 addToBlackListMeet(jsonResp.getJSONObject(i),mctx);
                             }
 
-                            String fechaBase = editDate.getText().toString();
                             Calendar basecal = Calendar.getInstance();
                             Calendar limitcal = Calendar.getInstance();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-                            Date d = sdf.parse(fechaBase);
-                            basecal.setTime(sdf.parse(fechaBase));
-                            limitcal.setTime(sdf.parse(fechaBase));
+                            basecal.setTime(Util.getDateFromDatePickerFormat(dateAsStringToSearch));
+                            limitcal.setTime(Util.getDateFromDatePickerFormat(dateAsStringToSearch));
                             basecal.set(Calendar.HOUR,8);
                             basecal.set(Calendar.MINUTE,0);
                             limitcal.set(Calendar.HOUR,22);
@@ -195,7 +191,7 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
             {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id", user.getId().toString());
-                params.put("date", editDate.getText().toString());
+                params.put("date", dateAsStringToSearch);
                 return params;
             }
         };;
@@ -213,7 +209,12 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 // +1 because january is zero
                 final String selectedDate = year + "/" + (month+1) + "/" + day;
-                editDate.setText(selectedDate);
+                dateAsStringToSearch = selectedDate;
+                try {
+                    editDate.setText(Util.getDateAsString(Util.getDateFromDatePickerFormat(selectedDate),"EEEE d 'de' MMMM, yyyy"));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -222,19 +223,12 @@ public class AddMeetActivity extends AppCompatActivity implements View.OnClickLi
 
     private void addToBlackListMeet(final JSONObject rowData,final Context mctx){
         try {
-            Meet meeto = new Meet();
-            DateFormat readFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
-            Date convertedDate = readFormat.parse(rowData.getString("fecha"));
-
-            meeto.setFecha(convertedDate);
+            Meet meeto = Util.parseJSONToMeet(rowData);
             meeto.setColorResource(colors[10]);
             blackMeetList.add(meeto);
-        } catch (ParseException e) {
-            Log.e("My App", "Could not parse date: \"" + rowData + "\"");
-            e.printStackTrace();
         } catch (Throwable t) {
             Log.e("My App", "Could not parse malformed JSON: \"" + rowData + "\"");
+            t.printStackTrace();
         }
 
     }
