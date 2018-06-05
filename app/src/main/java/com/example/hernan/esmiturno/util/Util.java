@@ -23,43 +23,47 @@ import java.util.Locale;
 public class Util {
     public static User parseJSONToUser(JSONObject json) throws JSONException {
 
-        JSONObject customerJSON = json.getJSONObject("customer");
-        JSONObject providerJSON = json.getJSONObject("provider");
-
         Customer customer = null;
-        if (!"null".equalsIgnoreCase(customerJSON.getString("id"))){
+        if (!"null".equalsIgnoreCase(json.getString("customer"))){
+            JSONObject customerJSON = json.getJSONObject("customer");
             customer = new Customer(customerJSON.getLong("id"));
         }
         Provider provider = null;
-        if (!"null".equalsIgnoreCase(providerJSON.getString("id"))){
+        if (!"null".equalsIgnoreCase(json.getString("provider"))){
+            JSONObject providerJSON = json.getJSONObject("provider");
             provider = new Provider(providerJSON.getLong("id"));
         }
 
         Person person = null;
-        Log.d("person: ", json.get("person").toString());
         if (!"null".equalsIgnoreCase(json.getString("person"))){
-
             JSONObject personJSON = json.getJSONObject("person");
-            Contact contact = null;
-            if (!"null".equalsIgnoreCase(personJSON.getString("contact"))){
-                JSONObject contactJSON = personJSON.getJSONObject("contact");
-                contact = new Contact(contactJSON.getLong("id"),
-                        contactJSON.getString("email"),
-                        contactJSON.getString("cellphone"),
-                        contactJSON.getString("email2"),
-                        contactJSON.getString("cellphone2"));
-            }
-
-            person = new Person(personJSON.getLong("id"),
-                    personJSON.getString("first_name"),
-                    personJSON.getString("last_name"),
-                    personJSON.getString("document_type"),
-                    personJSON.getString("document_number"),
-                    contact);
+            person = parseJSONToPerson(personJSON);
         }
 
-        User user = new User(json.getLong("id"),json.getString("username"),customer,provider,person);
+        User user = new User(json.getLong("id"),
+                json.getString("username"),
+                customer,
+                provider,
+                person);
         return user;
+    }
+
+    public static Person parseJSONToPerson(JSONObject json) throws JSONException {
+
+        Contact contact = null;
+        if (!"null".equalsIgnoreCase(json.getString("contact"))){
+            JSONObject contactJSON = json.getJSONObject("contact");
+            contact = parseJSONToContact(contactJSON);
+        }
+
+        Person person = new Person(json.getLong("id"),
+                json.getString("first_name"),
+                json.getString("last_name"),
+                json.getString("document_type"),
+                json.getString("document_number"),
+                contact);
+
+        return person;
     }
 
     public static MeetPlace parseJSONToMeetPlace(JSONObject json) throws JSONException {
@@ -67,26 +71,13 @@ public class Util {
         Contact contact = null;
         if (!"null".equalsIgnoreCase(json.getString("contact"))){
             JSONObject contactJSON = json.getJSONObject("contact");
-            contact = new Contact(contactJSON.getLong("id"),
-                    contactJSON.getString("email"),
-                    contactJSON.getString("cellphone"),
-                    contactJSON.getString("email2"),
-                    contactJSON.getString("cellphone2"));
+            contact = parseJSONToContact(contactJSON);
         }
         Addres addres = null;
         if (!"null".equalsIgnoreCase(json.getString("addres"))){
             JSONObject addresJSON = json.getJSONObject("addres");
-            addres = new Addres();
-            addres.setCountry(addresJSON.getString("country"));
-            addres.setCountryCode(addresJSON.getString("country_code"));
-            addres.setId(addresJSON.getLong("id"));
-            addres.setLocality(addresJSON.getString("locality"));
-            addres.setPostalCode(addresJSON.getString("postal_code"));
-            addres.setRegion(addresJSON.getString("region"));
-            addres.setStreetName(addresJSON.getString("street_name"));
-            addres.setStreetNumber(addresJSON.getString("street_number"));
+            addres = parseJSONToAddres(addresJSON);
         }
-
 
         MeetPlace place = new MeetPlace(json.getLong("id"),
                 json.getString("name"),
@@ -94,6 +85,29 @@ public class Util {
                 addres,
                 contact);
         return place;
+    }
+
+    public static Addres parseJSONToAddres(JSONObject json) throws JSONException {
+
+        Addres addres = new Addres();
+        addres.setId(json.getLong("id"));
+        addres.setCountry(json.getString("country"));
+        addres.setCountryCode(json.getString("country_code"));
+        addres.setLocality(json.getString("locality"));
+        addres.setPostalCode(json.getString("postal_code"));
+        addres.setRegion(json.getString("region"));
+        addres.setStreetName(json.getString("street_name"));
+        addres.setStreetNumber(json.getString("street_number"));
+
+        return addres;
+    }
+
+    public static Contact parseJSONToContact(JSONObject json) throws JSONException {
+        return  new Contact(json.getLong("id"),
+                json.getString("email"),
+                json.getString("cellphone"),
+                json.getString("email2"),
+                json.getString("cellphone2"));
     }
 
     public static Meet parseJSONToMeet(JSONObject json) throws JSONException {
