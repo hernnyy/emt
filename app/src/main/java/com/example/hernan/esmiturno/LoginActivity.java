@@ -378,6 +378,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Log.d("ACCOUNT",account.getEmail());
+            //TODO cargar datos en pantalla de registracion y llamarla
             // Signed in successfully, show authenticated UI.
 //            updateUI(account);
         } catch (ApiException e) {
