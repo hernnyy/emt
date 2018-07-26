@@ -30,7 +30,11 @@
             android:label="@string/title_activity_central" />
         <activity android:name=".AddMeetActivity" />
         <activity android:name=".MeetDetailFastActivity" />
-        <activity android:name=".RegistryActivity"></activity>
+        <activity android:name=".RegistryActivity" />
+        <activity
+            android:name=".HelpScreenActivity"
+            android:label="@string/title_activity_help_screen"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

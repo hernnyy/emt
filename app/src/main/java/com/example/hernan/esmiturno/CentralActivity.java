@@ -44,7 +44,6 @@ public class CentralActivity extends AppCompatActivity {
 
     private User user;
     private TextView mTextMessage;
-    private Button dummyBoton;
 
     private RecyclerView recyclerView;
     private MeetSimpleAdapter adapter;
@@ -103,7 +102,7 @@ public class CentralActivity extends AppCompatActivity {
         user = (User) bundle.get("userSS");
 //        Log.d("email: ", fraseimportada);
 
-        dummyBoton = (Button) findViewById(R.id.dummyBoton);
+        Button dummyBoton = (Button) findViewById(R.id.dummyBoton);
 //        mMeetTableList = (TableLayout) findViewById(R.id.meetTableList);
 //        mMeetTableList.removeAllViews();
         dummyBoton.setOnClickListener(new View.OnClickListener() {
