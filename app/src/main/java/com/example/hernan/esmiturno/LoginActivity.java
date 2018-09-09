@@ -137,6 +137,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+        Button helpButton = (Button) findViewById(R.id.help_button);
+        helpButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent (contexto, HelpScreenActivity.class);
+//                intent.putExtra("userSS", Util.parseJSONToUser(jsonResp));
+//                                intent.putExtra("id",jsonResp.getString("id"));
+                startActivityForResult(intent, 0);
+            }
+        });
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
