@@ -118,10 +118,18 @@
     <string name="title_activity_help">HelpActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="activity_help_tv1">Acerca de EMT</string>
+    <string name="activity_help_tv2">Esta app esta diseñada para gestionar sus turnos.</string>
+    <string name="button_html">Ir a Pagina web</string>
+
     <string name="title_activity_about_screen">Políticas</string>
-    <string name="title_activity_about">Términos y condiciones Generales del sitio</string>
-    <string name="about_text">\n Estimado usuario, antes de comenzar a usar el sitio de Ikaro IRA,\nsírvase leer atentamente los términos y condiciones expresados seguidamente.\n
-        El ingreso al sitio implica la aceptación de los mismos.
-Ikaro IRA se reserva el derecho de modificar total o parcialmente éstos términos y condiciones, sin previo aviso y en cualquier momento. Dichas modificaciones regirán desde el momento de su publicación en este medio.
-Ikaro IRA se reserva todos los derechos sobre sus marcas registradas e identificatorias de los servicios ofrecidos por el mismo, como así también los derechos de propiedad intelectual sobre el diseño y los contenidos del sitio.</string>
+    <string name="title_activity_about">Términos y condiciones</string>
+    <string name="about_text"> Estimado usuario, antes de comenzar a usar el sitio de Ikaro IRA,sírvase leer atentamente los términos y condiciones expresados seguidamente.\n
+
+        \nEl ingreso al sitio implica la aceptación de los mismos.
+        \n\nIkaro IRA se reserva el derecho de modificar total o parcialmente éstos términos y condiciones, sin previo aviso y en cualquier momento. Dichas modificaciones regirán desde el momento de su publicación en este medio.
+        \n\nIkaro IRA se reserva todos los derechos sobre sus marcas registradas e identificatorias de los servicios ofrecidos por el mismo, como así también los derechos de propiedad intelectual sobre el diseño y los contenidos del sitio.</string>
+
+
 </resources>
